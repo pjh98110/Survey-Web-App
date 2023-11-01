@@ -49,6 +49,13 @@ def find_available_port(start_port, end_port):
             return port
     return None
 
+# 대시보드를 실행하는 함수
+def run_dashboard(port, dashboard):
+    if not check_port(port):
+        dashboard.run(port=port)
+    else:
+        st.error(f"Port {port} is already in use!")
+
 selected_xai = st.selectbox(
     label = "원하는 XAI_분석을 선택하세요.",
     options=["XAI_분류", "XAI_회귀"],
@@ -74,74 +81,35 @@ selected_xai = st.selectbox(
 #             """, unsafe_allow_html=True)
 
 if selected_xai == "XAI_분류":
-    if st.button("XAI 분류 실행"):  # 버튼 생성
-
-        # 사용 가능한 포트 찾기
+    if st.button("XAI 분류 실행"):
         port1 = find_available_port(8055, 8100)
-        if port1 is None:
+        if port1 is not None:
+            X_train, y_train, X_test, y_test = titanic_embarked()
+            model = RandomForestClassifier(n_estimators=50, max_depth=10).fit(X_train, y_train)
+            explainer = ClassifierExplainer(model, X_test, y_test, cats=['Sex', 'Deck'], descriptions=feature_descriptions, labels=['Queenstown', 'Southampton', 'Cherbourg'])
+            dashboard = ExplainerDashboard(explainer, title="XAI Classification Dashboard", bootstrap=dbc.themes.MORPH)
+            t = threading.Thread(target=lambda: run_dashboard(port1, dashboard))
+            t.start()
+            st.components.v1.html(
+                f'<iframe src="http://localhost:{port1}" style="width:100%; height:600px;"></iframe>',
+                height=600
+            )
+        else:
             st.error("No available ports found!")
-
-        # 함수로 대시보드를 실행
-        def run_dashboard(port):
-            dashboard.run(port=port)
-
-
-        # 분류 대시보드
-        X_train, y_train, X_test, y_test = titanic_embarked()
-        model = RandomForestClassifier(n_estimators=50, max_depth=10).fit(X_train, y_train)
-
-        explainer = ClassifierExplainer(model, X_test, y_test, 
-                                        cats=['Sex', 'Deck'], 
-                                        descriptions=feature_descriptions,
-                                        labels=['Queenstown', 'Southampton', 'Cherbourg'])
-
-
-        # 대시보드 생성
-        dashboard = ExplainerDashboard(explainer, title="XAI Classification Dashboard", bootstrap=dbc.themes.MORPH)
-
-        # 스레드를 사용하여 대시보드 실행
-        t = threading.Thread(target=lambda: run_dashboard(port1))
-        t.start()
-
-        st.components.v1.html(
-            f"""
-            <iframe src="http://localhost:{port1}" style="width:100%; height:600px;"></iframe>
-            """,
-            height=600,
-        )
-
 
 elif selected_xai == "XAI_회귀":
     if st.button("XAI 회귀 실행"):
-
-        # 사용 가능한 포트 찾기
         port2 = find_available_port(8060, 8100)
-        if port2 is None:
+        if port2 is not None:
+            X_train, y_train, X_test, y_test = titanic_fare()
+            model_2 = RandomForestRegressor(n_estimators=50, max_depth=10).fit(X_train, y_train)
+            explainer_2 = RegressionExplainer(model_2, X_test, y_test, cats=['Sex', 'Deck', 'Embarked'], descriptions=feature_descriptions, units="$")
+            dashboard2 = ExplainerDashboard(explainer_2, title="Simplified Regression Dashboard", bootstrap=dbc.themes.MORPH)
+            t = threading.Thread(target=lambda: run_dashboard(port2, dashboard2))
+            t.start()
+            st.components.v1.html(
+                f'<iframe src="http://localhost:{port2}" style="width:100%; height:600px;"></iframe>',
+                height=600
+            )
+        else:
             st.error("No available ports found!")
-
-        # 회귀 대시보드
-        X_train, y_train, X_test, y_test = titanic_fare()
-        model_2 = RandomForestRegressor(n_estimators=50, max_depth=10).fit(X_train, y_train)
-
-        explainer_2 = RegressionExplainer(model_2, X_test, y_test, 
-                                        cats=['Sex', 'Deck', 'Embarked'], 
-                                        descriptions=feature_descriptions,
-                                        units="$")
-
-        # 대시보드 생성
-        dashboard2 = ExplainerDashboard(explainer_2, title="Simplified Regression Dashboard",  bootstrap=dbc.themes.MORPH)
-
-        # 함수로 대시보드를 실행
-        def run_dashboard2(port):
-            dashboard2.run(port=port)
-
-        # 스레드를 사용하여 대시보드 실행
-        t = threading.Thread(target=lambda: run_dashboard2(port2))
-        t.start()
-
-        st.components.v1.html(
-            f"""
-            <iframe src="http://localhost:{port2}" style="width:100%; height:600px;"></iframe>
-            """,
-            height=600,
-        )
