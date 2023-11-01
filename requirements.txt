@@ -1,7 +1,6 @@
 streamlit
 pandas
 numpy
-random
 os
 datetime
 streamlit_extras
