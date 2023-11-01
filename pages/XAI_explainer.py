@@ -6,12 +6,15 @@ import random
 import os
 import datetime as dt
 from streamlit_extras.switch_page_button import switch_page
+
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from explainerdashboard import ClassifierExplainer, ExplainerDashboard, RegressionExplainer
 from explainerdashboard.datasets import titanic_embarked, titanic_fare, feature_descriptions
 import dash_bootstrap_components as dbc
 import threading
 import graphviz
+import socket
+
 
 if "page" not in st.session_state:
     st.session_state.page = "Survey"
@@ -20,9 +23,10 @@ DATA_PATH = "./"
 SEED = 42
 
 # 데이터 불러오는 함수(캐싱)
-@st.cache_data # 캐싱 데코레이터 (ttl=900)
-def load_csv(path):
-    return pd.read_csv(path)
+# @st.cache_data # 캐싱 데코레이터 (ttl=900)
+# def load_csv(path):
+#     return pd.read_csv(path)
+
 
 st.markdown(f"""
             <span style='font-size: 24px;'>
@@ -31,6 +35,19 @@ st.markdown(f"""
             </strong>
             </div>
             """, unsafe_allow_html=True)
+
+# 포트가 사용 가능한지 확인하는 함수
+def check_port(port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('localhost', port))
+    return result == 0
+
+# 사용 가능한 포트를 찾는 함수
+def find_available_port(start_port, end_port):
+    for port in range(start_port, end_port):
+        if not check_port(port):
+            return port
+    return None
 
 selected_xai = st.selectbox(
     label = "원하는 XAI_분석을 선택하세요.",
