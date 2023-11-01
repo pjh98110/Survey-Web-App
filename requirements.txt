@@ -1,0 +1,9 @@
+streamlit
+pandas
+numpy
+random
+os
+datetime
+streamlit_extras.switch_page_button
+streamlit_extras.colored_header
+st_pages
