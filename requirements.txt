@@ -4,6 +4,5 @@ numpy
 random
 os
 datetime
-streamlit_extras.switch_page_button
-streamlit_extras.colored_header
+streamlit_extras
 st_pages
