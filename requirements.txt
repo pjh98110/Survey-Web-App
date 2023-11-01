@@ -4,3 +4,5 @@ numpy
 datetime
 streamlit_extras
 st_pages
+scipy==1.7.3
+
