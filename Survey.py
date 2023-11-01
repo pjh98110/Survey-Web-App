@@ -19,8 +19,8 @@ show_pages(
     [
         Page("Survey.py", "문진표", "✅"),
         Page("pages/Analysis.py", "분석 결과", "📄"),
-        Page("pages/Xai_dashboard.py", "XAI_explainer", "📘"),
-        Page("pages/Xai_omni.py", "XAI_omni", "📗"),
+        Page("pages/XAI_explainer.py", "XAI_explainer", "📘"),
+        Page("pages/XAI_omni.py", "XAI_omni", "📗"),
     ]
 )
 
