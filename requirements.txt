@@ -5,4 +5,9 @@ datetime
 streamlit_extras
 st_pages
 scipy==1.7.3
-
+scikit-learn
+explainerdashboard
+dash_bootstrap_components
+threading
+matplotlib
+seaborn
