@@ -52,7 +52,7 @@ def find_available_port(start_port, end_port):
 # 대시보드를 실행하는 함수
 def run_dashboard(port, dashboard):
     if not check_port(port):
-        dashboard.run(port=port)
+        dashboard.run(port=port, host='0.0.0.0')  # 모든 인터페이스에서 접근 가능하게 설정
     else:
         st.error(f"Port {port} is already in use!")
 
